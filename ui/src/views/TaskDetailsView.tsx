@@ -52,14 +52,17 @@ const useStyles = makeStyles((theme) => ({
   },
   infoRow: {
     display: "flex",
-    alignItems: "center",
+    alignItems: "flex-start",
     paddingTop: theme.spacing(1),
   },
   infoKeyCell: {
     width: "140px",
+    flexShrink: 0,
   },
   infoValueCell: {
-    width: "auto",
+    flex: 1,
+    minWidth: 0,
+    overflow: "auto",
   },
   footer: {
     paddingTop: theme.spacing(3),
