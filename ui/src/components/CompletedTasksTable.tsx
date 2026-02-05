@@ -21,7 +21,6 @@ import { AppState } from "../store";
 import { TableColumn } from "../types/table";
 import {
   durationFromSeconds,
-  prettifyPayload,
   stringifyDuration,
   timeAgo,
   uuidPrefix,
@@ -113,18 +112,18 @@ function Row(props: RowProps) {
       <TableCell>
         <SyntaxHighlighter
           language="json"
-          customStyle={{ margin: 0, maxWidth: 400 }}
+          customStyle={{ margin: 0, maxWidth: 400, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
         >
-          {prettifyPayload(task.payload)}
+          {task.payload}
         </SyntaxHighlighter>
       </TableCell>
       <TableCell>{timeAgo(task.completed_at)}</TableCell>
       <TableCell>
         <SyntaxHighlighter
           language="json"
-          customStyle={{ margin: 0, maxWidth: 400 }}
+          customStyle={{ margin: 0, maxWidth: 400, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
         >
-          {prettifyPayload(task.result)}
+          {task.result}
         </SyntaxHighlighter>
       </TableCell>
       <TableCell>

@@ -18,7 +18,12 @@ import { TaskDetailsRouteParams } from "../paths";
 import { usePolling } from "../hooks";
 import { listQueuesAsync } from "../actions/queuesActions";
 import SyntaxHighlighter from "../components/SyntaxHighlighter";
-import { durationFromSeconds, stringifyDuration, timeAgo, prettifyPayload } from "../utils";
+import {
+  durationFromSeconds,
+  stringifyDuration,
+  timeAgo,
+  prettifyPayload,
+} from "../utils";
 
 function mapStateToProps(state: AppState) {
   return {
@@ -48,7 +53,7 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(2),
   },
   breadcrumbs: {
-    marginBottom: theme.spacing(2),
+    marginBottom: theme.spacing(0),
   },
   infoRow: {
     display: "flex",
@@ -67,6 +72,10 @@ const useStyles = makeStyles((theme) => ({
   footer: {
     paddingTop: theme.spacing(3),
     paddingBottom: theme.spacing(3),
+  },
+  back: {
+    paddingTop: theme.spacing(3),
+    paddingBottom: theme.spacing(0),
   },
 }));
 
@@ -100,8 +109,16 @@ function TaskDetailsView(props: Props) {
             queueName={qname}
             taskId={taskId}
           />
+          <div className={classes.back}>
+            <Button
+              startIcon={<ArrowBackIcon />}
+              onClick={() => history.goBack()}
+            >
+              Go Back
+            </Button>
+          </div>
         </Grid>
-        <Grid item xs={12} md={6}>
+        <Grid item xs={12} md={8}>
           {props.error ? (
             <Alert severity="error" className={classes.alert}>
               <AlertTitle>Error</AlertTitle>
@@ -280,7 +297,7 @@ function TaskDetailsView(props: Props) {
                         <Typography>
                           {taskInfo.ttl_seconds > 0
                             ? `${stringifyDuration(
-                                durationFromSeconds(taskInfo.ttl_seconds)
+                                durationFromSeconds(taskInfo.ttl_seconds),
                               )} left`
                             : "expired"}
                         </Typography>

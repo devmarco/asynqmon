@@ -28,7 +28,7 @@ import TasksTable, { RowProps, useRowStyles } from "./TasksTable";
 import { taskDetailsPath } from "../paths";
 import { AppState } from "../store";
 import { TableColumn } from "../types/table";
-import { durationBefore, prettifyPayload, uuidPrefix } from "../utils";
+import { durationBefore, uuidPrefix } from "../utils";
 import SyntaxHighlighter from "./SyntaxHighlighter";
 
 function mapStateToProps(state: AppState) {
@@ -123,9 +123,9 @@ function Row(props: RowProps) {
       <TableCell>
         <SyntaxHighlighter
           language="json"
-          customStyle={{ margin: 0, maxWidth: 400 }}
+          customStyle={{ margin: 0, maxWidth: 400, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
         >
-          {prettifyPayload(task.payload)}
+          {task.payload}
         </SyntaxHighlighter>
       </TableCell>
       <TableCell>{durationBefore(task.next_process_at)}</TableCell>

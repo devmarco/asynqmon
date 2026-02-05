@@ -23,7 +23,7 @@ import {
 import { taskDetailsPath } from "../paths";
 import { AppState } from "../store";
 import { TableColumn } from "../types/table";
-import { prettifyPayload, timeAgo, uuidPrefix } from "../utils";
+import { timeAgo, uuidPrefix } from "../utils";
 import SyntaxHighlighter from "./SyntaxHighlighter";
 import TasksTable, { RowProps, useRowStyles } from "./TasksTable";
 
@@ -113,9 +113,9 @@ function Row(props: RowProps) {
       <TableCell>
         <SyntaxHighlighter
           language="json"
-          customStyle={{ margin: 0, maxWidth: 400 }}
+          customStyle={{ margin: 0, maxWidth: 400, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
         >
-          {prettifyPayload(task.payload)}
+          {task.payload}
         </SyntaxHighlighter>
       </TableCell>
       <TableCell>{timeAgo(task.last_failed_at)}</TableCell>
