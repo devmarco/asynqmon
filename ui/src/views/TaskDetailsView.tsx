@@ -226,7 +226,7 @@ function TaskDetailsView(props: Props) {
                   {taskInfo?.payload && (
                     <SyntaxHighlighter
                       language="json"
-                      customStyle={{ margin: 0, maxWidth: 400 }}
+                      customStyle={{ margin: 0 }}
                     >
                       {prettifyPayload(taskInfo.payload)}
                     </SyntaxHighlighter>
@@ -260,7 +260,7 @@ function TaskDetailsView(props: Props) {
                       <div className={classes.infoValueCell}>
                         <SyntaxHighlighter
                           language="json"
-                          customStyle={{ margin: 0, maxWidth: 400 }}
+                          customStyle={{ margin: 0 }}
                         >
                           {prettifyPayload(taskInfo.result)}
                         </SyntaxHighlighter>
