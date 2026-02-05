@@ -719,6 +719,157 @@ func getPageOptions(r *http.Request) (pageSize, pageNum int) {
 	return pageSize, pageNum
 }
 
+type taskSearchResult struct {
+	ID    string `json:"id"`
+	Queue string `json:"queue"`
+	Type  string `json:"type"`
+	State string `json:"state"`
+}
+
+type searchTasksResponse struct {
+	Tasks []*taskSearchResult `json:"tasks"`
+}
+
+func newSearchTasksHandlerFunc(inspector *asynq.Inspector) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		qname := mux.Vars(r)["qname"]
+		query := r.URL.Query().Get("query")
+		if query == "" {
+			writeResponseJSON(w, searchTasksResponse{Tasks: make([]*taskSearchResult, 0)})
+			return
+		}
+		queryLower := strings.ToLower(query)
+
+		const maxResults = 20
+		const pageSize = 500
+		const maxPagesPerState = 2 // up to 1000 per state
+
+		var results []*taskSearchResult
+
+		// Helper to check if we've collected enough results.
+		done := func() bool { return len(results) >= maxResults }
+
+		// Search active tasks.
+		for page := 1; page <= maxPagesPerState && !done(); page++ {
+			tasks, err := inspector.ListActiveTasks(qname, asynq.PageSize(pageSize), asynq.Page(page))
+			if err != nil {
+				break
+			}
+			for _, t := range tasks {
+				if strings.Contains(strings.ToLower(t.ID), queryLower) {
+					results = append(results, &taskSearchResult{ID: t.ID, Queue: qname, Type: t.Type, State: "active"})
+					if done() {
+						break
+					}
+				}
+			}
+			if len(tasks) < pageSize {
+				break
+			}
+		}
+
+		// Search pending tasks.
+		for page := 1; page <= maxPagesPerState && !done(); page++ {
+			tasks, err := inspector.ListPendingTasks(qname, asynq.PageSize(pageSize), asynq.Page(page))
+			if err != nil {
+				break
+			}
+			for _, t := range tasks {
+				if strings.Contains(strings.ToLower(t.ID), queryLower) {
+					results = append(results, &taskSearchResult{ID: t.ID, Queue: qname, Type: t.Type, State: "pending"})
+					if done() {
+						break
+					}
+				}
+			}
+			if len(tasks) < pageSize {
+				break
+			}
+		}
+
+		// Search scheduled tasks.
+		for page := 1; page <= maxPagesPerState && !done(); page++ {
+			tasks, err := inspector.ListScheduledTasks(qname, asynq.PageSize(pageSize), asynq.Page(page))
+			if err != nil {
+				break
+			}
+			for _, t := range tasks {
+				if strings.Contains(strings.ToLower(t.ID), queryLower) {
+					results = append(results, &taskSearchResult{ID: t.ID, Queue: qname, Type: t.Type, State: "scheduled"})
+					if done() {
+						break
+					}
+				}
+			}
+			if len(tasks) < pageSize {
+				break
+			}
+		}
+
+		// Search retry tasks.
+		for page := 1; page <= maxPagesPerState && !done(); page++ {
+			tasks, err := inspector.ListRetryTasks(qname, asynq.PageSize(pageSize), asynq.Page(page))
+			if err != nil {
+				break
+			}
+			for _, t := range tasks {
+				if strings.Contains(strings.ToLower(t.ID), queryLower) {
+					results = append(results, &taskSearchResult{ID: t.ID, Queue: qname, Type: t.Type, State: "retry"})
+					if done() {
+						break
+					}
+				}
+			}
+			if len(tasks) < pageSize {
+				break
+			}
+		}
+
+		// Search archived tasks.
+		for page := 1; page <= maxPagesPerState && !done(); page++ {
+			tasks, err := inspector.ListArchivedTasks(qname, asynq.PageSize(pageSize), asynq.Page(page))
+			if err != nil {
+				break
+			}
+			for _, t := range tasks {
+				if strings.Contains(strings.ToLower(t.ID), queryLower) {
+					results = append(results, &taskSearchResult{ID: t.ID, Queue: qname, Type: t.Type, State: "archived"})
+					if done() {
+						break
+					}
+				}
+			}
+			if len(tasks) < pageSize {
+				break
+			}
+		}
+
+		// Search completed tasks.
+		for page := 1; page <= maxPagesPerState && !done(); page++ {
+			tasks, err := inspector.ListCompletedTasks(qname, asynq.PageSize(pageSize), asynq.Page(page))
+			if err != nil {
+				break
+			}
+			for _, t := range tasks {
+				if strings.Contains(strings.ToLower(t.ID), queryLower) {
+					results = append(results, &taskSearchResult{ID: t.ID, Queue: qname, Type: t.Type, State: "completed"})
+					if done() {
+						break
+					}
+				}
+			}
+			if len(tasks) < pageSize {
+				break
+			}
+		}
+
+		if results == nil {
+			results = make([]*taskSearchResult, 0)
+		}
+		writeResponseJSON(w, searchTasksResponse{Tasks: results})
+	}
+}
+
 func newGetTaskHandlerFunc(inspector *asynq.Inspector, pf PayloadFormatter, rf ResultFormatter) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)

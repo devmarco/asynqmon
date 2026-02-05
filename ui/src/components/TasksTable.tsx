@@ -50,6 +50,7 @@ interface Props {
   loading: boolean;
   error: string;
   tasks: TaskInfoExtended[];
+  searchQuery?: string;
   batchActionPending: boolean;
   allActionPending: boolean;
   pollInterval: number;
@@ -214,7 +215,12 @@ export default function TasksTable(props: Props) {
     );
   }
 
-  const rowCount = props.tasks.length;
+  const filteredTasks = props.searchQuery
+    ? props.tasks.filter((task) =>
+        task.id.toLowerCase().includes(props.searchQuery!.toLowerCase())
+      )
+    : props.tasks;
+  const rowCount = filteredTasks.length;
   const numSelected = selectedIds.length;
   return (
     <div>
@@ -268,7 +274,7 @@ export default function TasksTable(props: Props) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {props.tasks.map((task) => {
+            {filteredTasks.map((task) => {
               return props.renderRow({
                 key: task.id,
                 task: task,

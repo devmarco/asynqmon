@@ -14,7 +14,7 @@ import ArchivedTasksTable from "./ArchivedTasksTable";
 import CompletedTasksTable from "./CompletedTasksTable";
 import AggregatingTasksTableContainer from "./AggregatingTasksTableContainer";
 import { useHistory } from "react-router-dom";
-import { queueDetailsPath, taskDetailsPath } from "../paths";
+import { queueDetailsPath } from "../paths";
 import { QueueInfo } from "../reducers/queuesReducer";
 import { AppState } from "../store";
 import { isDarkTheme } from "../theme";
@@ -119,7 +119,7 @@ const useStyles = makeStyles((theme) => ({
     maxWidth: 400,
     borderRadius: "18px",
     backgroundColor: isDarkTheme(theme) ? "#303030" : theme.palette.grey[100],
-    "&:hover, &:focus": {
+    "&:hover, &:focus-within": {
       backgroundColor: isDarkTheme(theme) ? "#303030" : theme.palette.grey[200],
     },
   },
@@ -163,7 +163,7 @@ function TasksTableContainer(props: Props & ReduxProps) {
     { key: "completed", label: "Completed", count: currentStats.completed },
   ];
 
-  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [searchQuery, setSearchQuery] = useState("");
 
   return (
     <Paper variant="outlined" className={classes.container}>
@@ -193,25 +193,14 @@ function TasksTableContainer(props: Props & ReduxProps) {
               <SearchIcon />
             </div>
             <InputBase
-              placeholder="Search by ID"
+              placeholder="Filter by ID"
               classes={{
                 root: classes.inputRoot,
                 input: classes.inputInput,
               }}
               value={searchQuery}
-              onChange={(e) => {
-                setSearchQuery(e.target.value);
-              }}
-              inputProps={{
-                "aria-label": "search",
-                onKeyDown: (e) => {
-                  if (e.key === "Enter") {
-                    history.push(
-                      taskDetailsPath(props.queue, searchQuery.trim())
-                    );
-                  }
-                },
-              }}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              inputProps={{ "aria-label": "filter tasks" }}
             />
           </div>
         </div>
@@ -220,39 +209,48 @@ function TasksTableContainer(props: Props & ReduxProps) {
         <ActiveTasksTable
           queue={props.queue}
           totalTaskCount={currentStats.active}
+          searchQuery={searchQuery}
         />
       </TabPanel>
       <TabPanel value="pending" selected={props.selected}>
         <PendingTasksTable
           queue={props.queue}
           totalTaskCount={currentStats.pending}
+          searchQuery={searchQuery}
         />
       </TabPanel>
       <TabPanel value="aggregating" selected={props.selected}>
-        <AggregatingTasksTableContainer queue={props.queue} />
+        <AggregatingTasksTableContainer
+          queue={props.queue}
+          searchQuery={searchQuery}
+        />
       </TabPanel>
       <TabPanel value="scheduled" selected={props.selected}>
         <ScheduledTasksTable
           queue={props.queue}
           totalTaskCount={currentStats.scheduled}
+          searchQuery={searchQuery}
         />
       </TabPanel>
       <TabPanel value="retry" selected={props.selected}>
         <RetryTasksTable
           queue={props.queue}
           totalTaskCount={currentStats.retry}
+          searchQuery={searchQuery}
         />
       </TabPanel>
       <TabPanel value="archived" selected={props.selected}>
         <ArchivedTasksTable
           queue={props.queue}
           totalTaskCount={currentStats.archived}
+          searchQuery={searchQuery}
         />
       </TabPanel>
       <TabPanel value="completed" selected={props.selected}>
         <CompletedTasksTable
           queue={props.queue}
           totalTaskCount={currentStats.completed}
+          searchQuery={searchQuery}
         />
       </TabPanel>
     </Paper>

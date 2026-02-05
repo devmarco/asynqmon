@@ -39,6 +39,7 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 
 interface Props {
   queue: string;
+  searchQuery?: string;
 }
 
 function AggregatingTasksTableContainer(
@@ -86,6 +87,7 @@ function AggregatingTasksTableContainer(
           queue={props.queue}
           totalTaskCount={selectedGroup.size}
           selectedGroup={selectedGroup.group}
+          searchQuery={props.searchQuery}
         />
       ) : (
         <Alert severity="info" className={classes.alert}>

@@ -68,6 +68,7 @@ interface Props {
   queue: string;
   selectedGroup: string;
   totalTaskCount: number; // total number of tasks in the group
+  searchQuery?: string;
 }
 
 const columns: TableColumn[] = [

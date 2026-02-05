@@ -9,6 +9,17 @@ const getBaseUrl = () =>
     ? `${window.ROOT_PATH}/api`
     : `http://localhost:8080${window.ROOT_PATH}/api`;
 
+export interface TaskSearchResult {
+  id: string;
+  queue: string;
+  type: string;
+  state: string;
+}
+
+export interface SearchTasksResponse {
+  tasks: TaskSearchResult[];
+}
+
 export interface ListQueuesResponse {
   queues: Queue[];
 }
@@ -417,6 +428,17 @@ export async function getTaskInfo(
   const resp = await axios({
     method: "get",
     url,
+  });
+  return resp.data;
+}
+
+export async function searchTasks(
+  qname: string,
+  query: string
+): Promise<SearchTasksResponse> {
+  const resp = await axios({
+    method: "get",
+    url: `${getBaseUrl()}/queues/${qname}/tasks:search?query=${encodeURIComponent(query)}`,
   });
   return resp.data;
 }
