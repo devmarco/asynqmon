@@ -72,6 +72,7 @@ interface Props {
   archiveTask?: (qname: string, taskId: string) => Promise<void>;
   cancelTask?: (qname: string, taskId: string) => Promise<void>;
   taskRowsPerPageChange: (n: number) => void;
+  onExport?: () => void;
 
   renderRow: (rowProps: RowProps) => JSX.Element;
 }
@@ -152,6 +153,13 @@ export default function TasksTable(props: Props) {
       disabled: props.allActionPending,
     });
   }
+  if (props.onExport) {
+    allActions.push({
+      label: "Export CSV",
+      onClick: props.onExport,
+      disabled: props.allActionPending,
+    });
+  }
 
   let batchActions = [];
   if (props.batchDeleteTasks) {
@@ -215,9 +223,14 @@ export default function TasksTable(props: Props) {
     );
   }
 
-  const filteredTasks = props.searchQuery
-    ? props.tasks.filter((task) =>
-        task.id.toLowerCase().includes(props.searchQuery!.toLowerCase())
+  const searchQueryLower = props.searchQuery
+    ? props.searchQuery.toLowerCase()
+    : "";
+  const filteredTasks = searchQueryLower
+    ? props.tasks.filter(
+        (task) =>
+          task.id.toLowerCase().includes(searchQueryLower) ||
+          task.type.toLowerCase().includes(searchQueryLower)
       )
     : props.tasks;
   const rowCount = filteredTasks.length;
@@ -225,11 +238,13 @@ export default function TasksTable(props: Props) {
   return (
     <div>
       {!window.READ_ONLY && (
-        <TableActions
-          showIconButtons={numSelected > 0}
-          iconButtonActions={batchActions}
-          menuItemActions={allActions}
-        />
+        <div style={{ display: "flex", justifyContent: "flex-end" }}>
+          <TableActions
+            showIconButtons={numSelected > 0}
+            iconButtonActions={batchActions}
+            menuItemActions={allActions}
+          />
+        </div>
       )}
       <TableContainer component={Paper}>
         <Table

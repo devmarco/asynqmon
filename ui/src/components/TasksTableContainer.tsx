@@ -193,7 +193,7 @@ function TasksTableContainer(props: Props & ReduxProps) {
               <SearchIcon />
             </div>
             <InputBase
-              placeholder="Filter by ID"
+              placeholder="Filter by ID or Type"
               classes={{
                 root: classes.inputRoot,
                 input: classes.inputInput,
