@@ -348,17 +348,8 @@ export default function TasksTable(props: Props) {
 export const useRowStyles = makeStyles((theme) => ({
   root: {
     cursor: "pointer",
-    "& #copy-button": {
-      display: "none",
-    },
     "&:hover": {
       boxShadow: theme.shadows[2],
-      "& #copy-button": {
-        display: "inline-block",
-      },
-    },
-    "&:hover $copyButton": {
-      display: "inline-block",
     },
     "&:hover .MuiTableCell-root": {
       borderBottomColor: theme.palette.background.paper,
@@ -373,13 +364,6 @@ export const useRowStyles = makeStyles((theme) => ({
   },
   idCell: {
     width: "200px",
-  },
-  copyButton: {
-    display: "none",
-  },
-  IdGroup: {
-    display: "flex",
-    alignItems: "center",
   },
 }));
 

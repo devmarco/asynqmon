@@ -99,21 +99,7 @@ function Row(props: RowProps) {
         </TableCell>
       )}
       <TableCell component="th" scope="row" className={classes.idCell}>
-        <div className={classes.IdGroup}>
-          {uuidPrefix(task.id)}
-          <Tooltip title="Copy full ID to clipboard">
-            <IconButton
-              onClick={(e) => {
-                e.stopPropagation();
-                navigator.clipboard.writeText(task.id);
-              }}
-              size="small"
-              className={classes.copyButton}
-            >
-              <FileCopyOutlinedIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-        </div>
+        {uuidPrefix(task.id)}
       </TableCell>
       <TableCell>{task.type}</TableCell>
       <TableCell>
@@ -135,6 +121,19 @@ function Row(props: RowProps) {
         >
           {props.showActions ? (
             <React.Fragment>
+              <Tooltip title="Copy full ID to clipboard">
+                <IconButton
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigator.clipboard.writeText(task.id);
+                  }}
+                  disabled={task.requestPending || props.allActionPending}
+                  size="small"
+                  className={classes.actionButton}
+                >
+                  <FileCopyOutlinedIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
               <Tooltip title="Delete">
                 <IconButton
                   onClick={props.onDeleteClick}
